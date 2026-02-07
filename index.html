@@ -1,0 +1,213 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Rose Day 🌹</title>
+
+  <style>
+    :root {
+      --bg-dark: #1C0F14;
+      --bg-mid: #2A141B;
+      --rose-soft: #FFD6E5;
+      --rose-muted: #E6B8C7;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Georgia", "Times New Roman", serif;
+      background: linear-gradient(to bottom, var(--bg-dark), var(--bg-mid), var(--bg-dark));
+      color: var(--rose-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+      text-align: center;
+    }
+
+    main {
+      max-width: 430px; /* iPhone 14 Pro Max width */
+      width: 100%;
+    }
+
+    h1 {
+      color: var(--rose-soft);
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+      text-shadow: 0 4px 20px rgba(255,182,193,0.35);
+      animation: fadeUp 1s ease forwards;
+    }
+
+    p.intro {
+      line-height: 1.6;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+      animation: fadeUp 1.4s ease forwards;
+    }
+
+    .roses {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .rose {
+      font-size: 2.5rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease, filter 0.2s ease;
+      filter: drop-shadow(0 2px 12px rgba(255,182,193,0.4));
+    }
+
+    .rose:active {
+      transform: scale(0.9);
+    }
+
+    .rose.holding {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 25px rgba(255,214,229,0.8));
+    }
+
+    .message-box {
+      background: rgba(42,20,27,0.85);
+      backdrop-filter: blur(10px);
+      padding: 24px;
+      border-radius: 20px;
+      color: var(--rose-soft);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      animation: fadeScale 0.6s ease forwards;
+    }
+
+    .secret {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      font-style: italic;
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    .tease {
+      margin-top: 14px;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards;
+      animation-delay: 1.2s;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeScale {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+<main>
+
+  <h1>Sanuri Munuri ❤️</h1>
+
+  <p class="intro">
+    Happy Rose Day to you my love.<br><br>
+    It’s the day I remind you that my heart already chose you
+    and it loves you more than I love myself.<br><br>
+    I will always shower you with roses, not just today.<br><br>
+    Do you know why?<br><br>
+    I want to let the roses feel what I feel when I am with you —
+    <em>the best feeling in the world.</em>
+  </p>
+
+  <div class="roses">
+    <div class="rose" data-text="This rose can't ever match your beauty.">🌹</div>
+    <div class="rose" data-text="With you, my mind rests, and heart feels home. That’s rarer than love.">🤍</div>
+    <div class="rose" data-text="If teasing you was a crime, I’d happily serve a lifetime sentence. Because you know whyyyyy. 😘">🌸</div>
+    <div class="rose" data-text="I get jealous sometimes, not because of anything else, but because the world gets to see you. Meri sanu, meri matra sanu ❤️">🖤</div>
+    <div class="rose secret-rose">✨</div>
+  </div>
+
+  <div id="message"></div>
+
+</main>
+
+<script>
+  const messageBox = document.getElementById("message");
+  const roses = document.querySelectorAll(".rose");
+  const secretRose = document.querySelector(".secret-rose");
+
+  let pressTimer = null;
+  let secretUnlocked = localStorage.getItem("rose-secret") === "true";
+
+  const haptic = (ms = 15) => {
+    if (navigator.vibrate) navigator.vibrate(ms);
+  };
+
+  if (secretUnlocked) {
+    showSecret();
+  }
+
+  roses.forEach(rose => {
+    if (!rose.classList.contains("secret-rose")) {
+      rose.addEventListener("click", () => {
+        if (secretUnlocked) return;
+        haptic();
+        showMessage(rose.dataset.text);
+      });
+    }
+  });
+
+  secretRose.addEventListener("pointerdown", () => {
+    secretRose.classList.add("holding");
+    pressTimer = setTimeout(() => {
+      haptic(30);
+      secretUnlocked = true;
+      localStorage.setItem("rose-secret", "true");
+      showSecret();
+    }, 1200);
+  });
+
+  ["pointerup", "pointerleave", "pointercancel"].forEach(evt => {
+    secretRose.addEventListener(evt, () => {
+      secretRose.classList.remove("holding");
+      clearTimeout(pressTimer);
+    });
+  });
+
+  function showMessage(text) {
+    messageBox.innerHTML = `
+      <div class="message-box">
+        <p>${text}</p>
+      </div>
+    `;
+  }
+
+  function showSecret() {
+    messageBox.innerHTML = `
+      <div class="message-box">
+        <p>If love had a color, it wouldn’t be red. It would be you.</p>
+        <div class="secret">
+          Not just today but I will keep on giving you roses.<br>
+          I know the flower dries up.<br>
+          And the fragrance fades away.<br>
+          But our love keeps on growing stronger and stronger.<br><br>
+          In a world full of choices,<br>
+          I choose you.<br><br>
+          In every universe and in every life. 🌹
+        </div>
+        <div class="tease">Tomorrow, I might ask you a question… 💍</div>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>
